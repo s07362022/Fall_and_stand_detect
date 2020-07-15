@@ -13,13 +13,13 @@ import keras
 #from keras.models import load_model
 from tensorflow.keras.models import load_model
 
-IMAGE_SIZE =48 #the model img size
+IMAGE_SIZE =48
 train_list = []
-train_ary= np.zeros(shape=(100,48,48,3)) 
+train_ary= np.zeros(shape=(100,48,48,3))
 
 #載入模型
 #model = Sequential()
-model = load_model('C:\\Harden_project\\project5_node.js\\CNN_fall.h5') #keras.models. CNN_fall.h5
+model = load_model('C:\\Harden_project\\project5_node.js\\CNN_fall.h5') #keras.models.
 
 def resize_image(image, height = IMAGE_SIZE, width = IMAGE_SIZE):
     top, bottom, left, right = (0, 0, 0, 0)
@@ -89,13 +89,13 @@ def CatchUsbVideo(window_name, camera_idx):
         print(train_ary.shape)
         
         #train_ary = train_ary.reshape(train_ary.shape[0],-1)
-        fallID = model.predict_classes(train_ary)
+        faceID = model.predict_classes(train_ary)
         print(faceID)
         print(type(faceID))
                 #轉list
-        fall = fallID.tolist()
+        face = faceID.tolist()
                 #試試看 數值變數  
-        if fall[a] == 1:                                                        
+        if face[a] == 1:                                                        
             #cv2.rectangle(frame)
             #文字提示是誰
             cv2.putText(frame,'FALL' ,(10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1, cv2.LINE_AA)                                     
@@ -135,5 +135,5 @@ if __name__ == '__main__':
         CatchUsbVideo("video", 0)
 #print(train_ary.shape)
 #預測
-fallID = model.predict_classes(train_ary)
-#print(fallID) 
+faceID = model.predict_classes(train_ary)
+#print(faceID)
