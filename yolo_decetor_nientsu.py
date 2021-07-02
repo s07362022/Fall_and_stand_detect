@@ -1,17 +1,22 @@
 import cv2
 import numpy as np
 #YOLO_network
-net = cv2.dnn.readNetFromDarknet("C:\\program1\\yolo\\darknet-master\\build\\darknet\\x64\\yolov3.cfg","C:\\program1\\yolo\\darknet-master\\build\\darknet\\x64\\all\\yolov3_last.weights")
+net = cv2.dnn.readNetFromDarknet("F:\\program1\\yolo\\darknet-master\\build\\darknet\\x64\\cfg\\yolov3.cfg","F:\\program1\\yolo\\darknet-master\\build\\darknet\\x64\\yolov3.weights")
+net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 layer_names = net.getLayerNames()
 output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-classes = [line.strip() for line in open("C:\\program1\\yolo\\darknet-master\\build\\darknet\\x64\\obj.names")]
-colors = [(0,0,255),(255,0,0),(0,255,0)]
-
-
-def yolo_detect(frame):
+classes = [line.strip() for line in open("F:\\program1\\yolo\\darknet-master\\build\\darknet\\x64\\data\\coco.names")]
+colors = [(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0)]
+net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_OPENCL_FP16)
+##################
+img_path= "F:\\pic"
+count=1
+##################
+def yolo_detect(frame,path_name,count):
     # forward propogation
-    img = cv2.resize(frame, None, fx=0.4, fy=0.4)
-    #print(type(img))<class 'numpy.ndarray'>
+    img = frame
     height, width, channels = img.shape 
     blob = cv2.dnn.blobFromImage(img, 1/255.0, (416, 416), (0, 0, 0), True, crop=False)
     net.setInput(blob)
@@ -51,7 +56,10 @@ def yolo_detect(frame):
             cv2.rectangle(img, (x,y), (x+w,y+h), color, 1) #劃出框框
             #print(x,y,(x+w),(y+h))
             image = img[y - 10: y + h + 10, x - 10: x + w + 10]
-            
+            if count%10==0:
+                img_name = '%s//%d.jpg'%(path_name, count)
+                print("儲存成功")
+            cv2.imwrite(img_name, image)
             cv2.putText(img, label, (x, y -5), font, 1, color, 1)
             '''
             print("偵測到")
@@ -66,14 +74,14 @@ import cv2
 import imutils
 import time
 
-VIDEO_IN = cv2.VideoCapture(0)
+VIDEO_IN = cv2.VideoCapture(1)
 
 while True:
     hasFrame, frame = VIDEO_IN.read()
     
-    img = yolo_detect(frame)
+    img = yolo_detect(frame,path_name=img_path,count=count)
     cv2.imshow("Frame", imutils.resize(img, width=1200,height=960))#imutils.resize(img), width=, width=860
-    
+    count=count+1
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
